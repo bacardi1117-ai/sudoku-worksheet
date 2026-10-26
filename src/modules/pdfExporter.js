@@ -38,7 +38,9 @@ export async function exportPdf(batch,{mode='worksheet',perPage=2,title='數獨�
  if(!['worksheet','answers','combined'].includes(mode))throw new Error('PDF 類型不合法')
  const layout=layoutFor(perPage,size),pdf=await PDFDocument.create()
  pdf.registerFontkit(fontkit)
- const font=await pdf.embedFont(await loadFont(fontBytes),{subset:true})
+ // Fontkit's PDF subset for this Noto Sans TC font maps text correctly but drops
+ // most glyph outlines in rendered pages. Embed the validated full font instead.
+ const font=await pdf.embedFont(await loadFont(fontBytes),{subset:false})
  pdf.setCreationDate(new Date('2000-01-01T00:00:00Z'));pdf.setModificationDate(new Date('2000-01-01T00:00:00Z'))
  const sections=mode==='combined'?['worksheet','answers']:[mode],pagesPerSection=Math.ceil(batch.length/perPage)
  let done=0
