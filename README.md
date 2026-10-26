@@ -1,27 +1,21 @@
-# 數獨學習單產生器
+# 教師數獨學習單產生器
 
-專為教師規劃的數獨 PDF 學習單網站。目前為第一階段：提供繁體中文的響應式設定介面及空白版面示意，尚未產生數獨題目或 PDF。
+Vite + 原生 JavaScript，繁體中文響應式介面，無後端。第二階段提供真正的數獨批次產生；PDF 匯出預留至第三階段，下載按鈕維持停用。
 
-## 開始開發
+## 雲端開發
 
-需要 Node.js 20.19+ 或 22.12+。
+Node.js 20.19+ 或 22.12+。在雲端 checkout 執行 `npm ci`、`npm run dev`。若預設 npm 快取不可寫，可加上 `--cache /workspace/shared/npm-cache`。驗證指令為 `npm test` 與 `npm run build`。
 
-```bash
-npm install
-npm run dev
-```
+## 使用方式
 
-執行 `npm run build` 建立靜態網站；`npm run preview` 可在本機檢查建置結果。Vite 的 `base` 已設定為 `/sudoku-worksheet/`，供日後部署至 GitHub Pages 使用。本階段不包含部署設定或正式發布。
+支援 6×6（2×3 宮格）及 9×9（3×3 宮格）。每批輸入 1～20 題。可設定標題、每頁題數與學生欄位，題目採唯讀顯示。輸入相同 Seed、尺寸、難度與數量可重現整批結果；留空 Seed 會產生並顯示新的 Seed。要換一批題目，請清空或更換 Seed。
 
-## 目前介面
+## 產生與分級
 
-- 數獨尺寸：4×4、6×6、9×9；難度會依尺寸調整。
-- 題數：5、10、20、50、100；A4 每頁 1、2、4、6 題。
-- 自訂標題，以及班級、姓名、日期欄位的顯示選項。
-- 空白版面示意、進度及錯誤訊息區。
+產生完整合法解答，再逐格移除數字；每次保留的移除均通過唯一解與邏輯可解性檢查。批次以八種旋轉／鏡射及首次出現順序的數字正規化排除等價題目。每批最多嘗試「題數 × 100」次，失敗會回報原因。
 
-「產生題目」及 PDF 下載按鈕目前停用；示意棋盤不是已產生的題目。
+兩種尺寸目前都使用相同保守標準：只需 Naked Single 為「入門」；需要 Hidden Single 為「簡單」。無法由這兩種技巧完成的題目回傳未分級，不會提供給使用者。中等、困難、專家尚未開放；Locked Candidates 與 Naked Pairs 尚未實作。分級反映此解題器的技巧順序，不代表普遍一致的人類難度。
 
-## 後續整合位置
+`src/modules` 包含 sudokuGenerator、sudokuSolver、difficultyGrader 與尚未實作的 pdfExporter。測試涵蓋規則、唯一解、答案對應、Seed、數量限制、等價排除與邏輯技巧。
 
-`src/modules/` 預留 `sudokuGenerator`、`sudokuSolver`、`difficultyGrader` 和 `pdfExporter`。這些模組目前只會明確回報未實作。專案已加入 `pdf-lib` 依賴，後續可在 `pdfExporter` 使用它建立題目和解答 PDF。
+Vite base path 為 `/sudoku-worksheet/`，本階段不部署 GitHub Pages。
