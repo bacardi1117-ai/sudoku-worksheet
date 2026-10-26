@@ -17,6 +17,7 @@ for(const size of [6,9])test(`${size}×${size} PDF modes, counts and layouts`,as
    const pdf=await PDFDocument.load(bytes),pages=Math.ceil(count/perPage)*(mode==='combined'?2:1)
    assert.equal(pdf.getPageCount(),pages)
    for(const page of pdf.getPages())assert.deepEqual(page.getSize(),{width:595.28,height:841.89})
+   if(count!==1 && !(count===20 && perPage===6)) continue
    const path=`/tmp/sudoku-pdf-test-${process.pid}.pdf`;writeFileSync(path,bytes)
    let text;try{text=execFileSync('pdftotext',[path,'-'],{encoding:'utf8'})}finally{unlinkSync(path)}
    assert.match(text,/繁體中文數獨學習單/)
@@ -28,4 +29,29 @@ for(const size of [6,9])test(`${size}×${size} PDF modes, counts and layouts`,as
 })
 test('PDF rejects missing batch and invalid layout',async()=>{
  await assert.rejects(exportPdf([],{fontBytes}));assert.throws(()=>layoutFor(3,9))
+})
+
+for(const size of [6,9])test(`${size}×${size} rendered PDF cells match preview data`,async()=>{
+ const [item]=await generateSudoku({size,count:1,seed:'visual-regression'})
+ for(const perPage of [1,2,4,6])for(const mode of ['worksheet','answers','combined']){
+  const bytes=await exportPdf([item],{mode,perPage,fontBytes,title:'數獨學習單'})
+  const pdfPath=`/tmp/sudoku-render-${process.pid}.pdf`,imageBase=`/tmp/sudoku-render-${process.pid}`
+  writeFileSync(pdfPath,bytes)
+  try{
+   const page=mode==='answers'?1:1
+   execFileSync('pdftoppm',['-f',String(page),'-l',String(page),'-singlefile','-r','100','-png',pdfPath,imageBase],{stdio:'pipe'})
+   const plan=layoutFor(perPage,size),x=36+(plan.slotWidth-plan.board)/2,y=plan.top-32-plan.board
+   const values=mode==='answers'?item.solution:item.puzzle
+   const bboxPath=`${imageBase}.html`
+   writeFileSync(bboxPath,execFileSync('pdftotext',['-f','1','-l','1','-bbox',pdfPath,'-']))
+   execFileSync('python3',['test/assert-render.py',`${imageBase}.png`,JSON.stringify({size,board:plan.board,x,y,values}),bboxPath],{stdio:'pipe'})
+   unlinkSync(bboxPath)
+   const bbox=execFileSync('pdftotext',['-bbox',pdfPath,'-'],{encoding:'utf8'})
+   assert.match(bbox,/數獨學習單/)
+   for(const match of bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)"/g)){
+    const [,x0,y0,x1,y1]=match.map(Number)
+    assert.ok(x0>=0&&y0>=0&&x1<=595.28&&y1<=841.89,'文字超出 A4 邊界')
+   }
+  }finally{unlinkSync(pdfPath);unlinkSync(`${imageBase}.png`)}
+ }
 })

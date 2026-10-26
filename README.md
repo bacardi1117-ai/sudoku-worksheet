@@ -24,4 +24,10 @@ Vite base path 為 `/sudoku-worksheet/`，本階段不部署 GitHub Pages。
 
 先產生題目，再選擇 A4 每頁 1、2、4 或 6 題，並按「下載題目 PDF」、「下載答案 PDF」或「下載題目＋答案 PDF」。6×6 預設每頁 4 題，9×9 預設每頁 2 題。9×9 每頁 6 題會顯示尺寸提醒。三種下載都使用同一批題目與答案，不會重新產生。下載後可再次下載。檔名包含下載日期、尺寸、難度及類型。
 
-PDF 由瀏覽器產生，無需後端。首次下載會載入約 5.7 MB 的 Noto Sans TC 字型資源；此字型依 SIL Open Font License 1.1 再散布，授權檔位於 `public/fonts/OFL.txt`。PDF 內嵌實際使用的字形，以便在 Windows、Edge、Chrome 與一般 PDF 閱讀器顯示繁體中文。PDF 內容由已產生的題目與目前排版設定決定；下載日期只影響檔名。部分罕用或擴充區文字若字型不支援，匯出會顯示錯誤。
+PDF 由瀏覽器產生，無需後端。首次下載會載入約 5.7 MB 的 Noto Sans TC 字型資源；此字型依 SIL Open Font License 1.1 再散布，授權檔位於 `public/fonts/OFL.txt`。PDF 內嵌完整的精簡字型檔，以便在 Windows、Edge、Chrome 與一般 PDF 閱讀器顯示繁體中文。PDF 內容由已產生的題目與目前排版設定決定；下載日期只影響檔名。部分罕用或擴充區文字若字型不支援，匯出會顯示錯誤。
+
+### PDF 字型與視覺回歸測試
+
+Noto Sans TC 約 5.7 MB，僅在首次匯出時載入。匯出的 PDF 會完整嵌入此字型；目前版本的 pdf-lib/fontkit 對此字型使用 PDF 子集時，文字抽取結果正常，但渲染器會漏掉大部分字形，因此不能啟用 PDF 字型子集。完整嵌入使單份 PDF 約增加 3.7 MB，但可正確繪製標題、題號及格內數字。
+
+`npm test` 的 PDF 視覺回歸測試需要 `pdftotext`、`pdftoppm`、Python 3 與 Pillow。測試會將 PDF 轉成圖片，逐格比對實際可見的提示數字，並檢查標題和文字邊界。
