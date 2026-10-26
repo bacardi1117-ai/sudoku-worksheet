@@ -1,5 +1,8 @@
 import { generateSudoku } from './modules/sudokuGenerator.js'
 let generated = []
+let exporting = false
+const downloadButtons = ["worksheet","answers","combined"].map(type=>document.querySelector(`#download-${type}`))
+function updateDownloadButtons(){downloadButtons.forEach(button=>button.disabled=!generated.length||exporting)}
 import './style.css'
 
 const applicableDifficulties = {
@@ -64,6 +67,7 @@ function updatePreview() {
   const title = form.elements.title.value.trim() || '數獨練習學習單'
   paperTitle.textContent = title
   pageSummary.textContent = `A4 · 每頁 ${perPage} 題`
+  document.querySelector("#layout-warning").hidden = !(size === 9 && perPage === 6)
 
   paperFields.replaceChildren()
   for (const [name, label] of [
@@ -79,6 +83,7 @@ function updatePreview() {
 
   document.querySelector('.preview-pill').textContent = generated.length ? '已產生題目' : '版面示意 · 非實際題目'
   document.querySelector('.preview-note').textContent = generated.length ? `共 ${generated.length} 題，皆已驗證唯一解。` : '尚未產生題目。'
+  updateDownloadButtons()
   paperPuzzles.replaceChildren()
   paperPuzzles.dataset.count = perPage
   for (let index = 0; index < (generated.length || perPage); index += 1) {
@@ -95,7 +100,7 @@ function updatePreview() {
 form.addEventListener('submit', (event) => event.preventDefault())
 form.addEventListener('input', (event) => {
   if (['size', 'difficulty', 'quantity', 'seed'].includes(event.target.name)) generated = []
-  if (event.target.name === 'size') updateDifficulties()
+  if (event.target.name === 'size') { updateDifficulties(); form.querySelector(`input[name=perPage][value=${selectedValue('size') === '6' ? '4' : '2'}]`).checked=true }
   updatePreview()
 })
 form.addEventListener('change', (event) => {
@@ -122,6 +127,25 @@ generateButton.addEventListener('click', async () => {
  updatePreview()
  document.querySelector('.preview-pill').textContent='已產生題目'
  document.querySelector('.preview-note').textContent=`共 ${generated.length} 題，皆已驗證唯一解。Seed：${seedInput.value}`
+ updateDownloadButtons()
  } catch (e) {error.textContent=e.message;error.hidden=false;progress.textContent='產生失敗'}
  finally {controls.forEach(c=>c.disabled=false)}
+})
+
+for (const [index,mode] of ['worksheet','answers','combined'].entries()) downloadButtons[index].addEventListener('click', async () => {
+ if (!generated.length || exporting) return
+ exporting=true;updateDownloadButtons()
+ const error=document.querySelector('#error-message'),progress=document.querySelector('#progress-message')
+ error.hidden=true;progress.textContent='正在準備 PDF…'
+ try {
+  const {exportPdf,layoutFor}=await import('./modules/pdfExporter.js')
+  const perPage=Number(selectedValue('perPage')),size=generated[0].size
+  const bytes=await exportPdf(generated,{mode,perPage,title:form.elements.title.value.trim(),showClass:form.elements.showClass.checked,showName:form.elements.showName.checked,showDate:form.elements.showDate.checked,onProgress:(done,total)=>progress.textContent=`PDF 處理進度 ${done} / ${total} 頁`})
+  const date=new Date(),stamp=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('')
+  const name=`${stamp}_${size}x${size}_${generated[0].difficulty}_${mode}.pdf`
+  const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'})),link=document.createElement('a')
+  link.href=url;link.download=name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)
+  progress.textContent=`已下載 ${name}。可再次下載同一批題目。${layoutFor(perPage,size).warning?'提醒：9×9 每頁 6 題的棋盤較小。':''}`
+ }catch(e){error.textContent=`PDF 匯出失敗：${e.message}`;error.hidden=false;progress.textContent='PDF 匯出失敗'}
+ finally{exporting=false;updateDownloadButtons()}
 })

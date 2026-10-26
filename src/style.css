@@ -66,3 +66,7 @@ button:disabled{cursor:not-allowed}
 .blank-board span{display:grid;place-items:center;font-size:11px;min-width:0}.size-options{grid-template-columns:repeat(2,1fr)}input[type=number],#seed{width:100%;padding:10px;border:1px solid #dde5db;border-radius:8px}
 
 .art-grid{grid-template-columns:repeat(6,1fr)}
+
+.download-actions{grid-template-columns:1fr 1fr}.download-actions button:last-child{grid-column:1/-1}
+
+.layout-warning{padding:10px 12px;border-radius:8px;background:#fff3e5;color:#9a603a;font-size:12px}.layout-warning[hidden]{display:none}

@@ -15,7 +15,7 @@
             <span class="brand-mark" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span></span>
             <span>數獨<span class="brand-light">學習單</span></span>
           </a>
-          <span class="phase-badge">教師工具 · 第二階段</span>
+          <span class="phase-badge">教師工具 · 第三階段</span>
         </div>
       </header>
 
@@ -24,7 +24,7 @@
           <div class="hero-copy">
             <p class="eyebrow">從課堂構想，到一張好用的學習單</p>
             <h1 id="page-title">讓每一題數獨，<br /><em>剛好適合你的課堂。</em></h1>
-            <p class="hero-description">選好尺寸、難度與版面，產生屬於你的數獨學習單。可產生唯一解題目；PDF 下載功能尚未開放。</p>
+            <p class="hero-description">選好尺寸、難度與版面，產生屬於你的數獨學習單。可產生唯一解題目；可下載題目、答案及合併 PDF。</p>
             <div class="hero-meta"><span class="meta-dot" aria-hidden="true"></span> 無需登入 · 專為教師設計</div>
           </div>
           <div class="hero-art" aria-hidden="true">
@@ -44,22 +44,22 @@
               <div class="field-group"><label for="worksheet-title">學習單標題</label><input id="worksheet-title" name="title" type="text" maxlength="40" value="數獨練習學習單" placeholder="例如：週五數獨挑戰" /><p class="field-help">最多 40 個字；留空時使用預設標題</p></div>
               <fieldset class="field-group"><legend>A4 每頁題數 <span class="required">*</span></legend><div class="segmented page-options"><label><input type="radio" name="perPage" value="1" /><span>1 題</span></label><label><input type="radio" name="perPage" value="2" checked /><span>2 題</span></label><label><input type="radio" name="perPage" value="4" /><span>4 題</span></label><label><input type="radio" name="perPage" value="6" /><span>6 題</span></label></div></fieldset>
               <fieldset class="field-group field-group-last"><legend>學生資訊欄位</legend><p class="field-help">選擇要顯示在學習單上的欄位</p><div class="checkbox-row"><label><input type="checkbox" name="showClass" checked /><span>班級</span></label><label><input type="checkbox" name="showName" checked /><span>姓名</span></label><label><input type="checkbox" name="showDate" checked /><span>日期</span></label></div></fieldset>
-              <label for="seed">固定 Seed</label><input id="seed" name="seed" type="text" placeholder="留空時隨機產生" /><div class="action-area"><button id="generate-button" class="button button-primary" type="button">產生題目 <span aria-hidden="true">↗</span></button><p>每批 1～20 題；PDF 功能將在第三階段開放</p></div>
+              <label for="seed">固定 Seed</label><input id="seed" name="seed" type="text" placeholder="留空時隨機產生" /><div class="action-area"><button id="generate-button" class="button button-primary" type="button">產生題目 <span aria-hidden="true">↗</span></button><p>每批 1～20 題；產生後可下載題目、答案或合併 PDF</p></div>
             </form>
           </section>
 
           <section class="panel preview-panel" aria-labelledby="preview-title">
             <div class="panel-heading"><span class="step-number">02</span><div><h3 id="preview-title">學習單預覽</h3><p>設定版面並產生唯讀數獨題目</p></div></div>
             <div class="preview-toolbar"><span class="preview-pill"><span aria-hidden="true">◌</span> 版面示意 · 非實際題目</span><span id="page-summary">A4 · 每頁 2 題</span></div>
-            <div class="paper-wrap"><div class="paper" aria-label="學習單題目預覽"><div class="paper-topline"></div><div class="paper-header"><span class="paper-kicker">SUDOKU WORKSHEET</span><h4 id="paper-title">數獨練習學習單</h4><div id="paper-fields" class="paper-fields"></div></div><div id="paper-puzzles" class="paper-puzzles"></div><div class="paper-footer"><span>慢慢想，找到屬於你的解法。</span><span>01</span></div></div></div>
+            <p id="layout-warning" class="layout-warning" hidden>提醒：9×9 每頁 6 題的棋盤較小，建議改用每頁 2 或 4 題。</p><div class="paper-wrap"><div class="paper" aria-label="學習單題目預覽"><div class="paper-topline"></div><div class="paper-header"><span class="paper-kicker">SUDOKU WORKSHEET</span><h4 id="paper-title">數獨練習學習單</h4><div id="paper-fields" class="paper-fields"></div></div><div id="paper-puzzles" class="paper-puzzles"></div><div class="paper-footer"><span>慢慢想，找到屬於你的解法。</span><span>01</span></div></div></div>
             <p class="preview-note">此處只展示空白排版；尚未產生題目或答案。</p>
-            <div class="download-actions"><button id="download-worksheet" class="button button-outline" type="button" disabled>↓ 下載題目 PDF</button><button id="download-answers" class="button button-outline" type="button" disabled>↓ 下載答案 PDF</button></div>
-            <div class="status-box" role="status" aria-live="polite"><span class="status-icon" aria-hidden="true">i</span><div><strong>產生進度</strong><p id="progress-message">尚未產生題目。可產生唯一解題目；PDF 下載功能尚未開放。</p></div></div>
+            <div class="download-actions"><button id="download-worksheet" class="button button-outline" type="button" disabled>↓ 下載題目 PDF</button><button id="download-answers" class="button button-outline" type="button" disabled>↓ 下載答案 PDF</button><button id="download-combined" class="button button-outline" type="button" disabled>↓ 下載題目＋答案 PDF</button></div>
+            <div class="status-box" role="status" aria-live="polite"><span class="status-icon" aria-hidden="true">i</span><div><strong>產生進度</strong><p id="progress-message">尚未產生題目。可產生唯一解題目；可下載題目、答案及合併 PDF。</p></div></div>
             <p id="error-message" class="error-message" role="alert" hidden></p>
           </section>
         </div>
       </main>
-      <footer class="site-footer"><div class="shell footer-inner"><span>數獨學習單產生器</span><span>為每一堂有趣的課而設計 · 第二階段介面預覽</span></div></footer>
+      <footer class="site-footer"><div class="shell footer-inner"><span>數獨學習單產生器</span><span>為每一堂有趣的課而設計 · 第三階段介面預覽</span></div></footer>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>
