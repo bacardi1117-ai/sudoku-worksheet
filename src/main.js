@@ -1,9 +1,10 @@
+import { generateSudoku } from './modules/sudokuGenerator.js'
+let generated = []
 import './style.css'
 
 const applicableDifficulties = {
-  4: ['入門', '簡單'],
-  6: ['入門', '簡單', '中等'],
-  9: ['入門', '簡單', '中等', '困難', '專家'],
+  6: ['入門', '簡單'],
+  9: ['入門', '簡單'],
 }
 
 const form = document.querySelector('#worksheet-form')
@@ -33,17 +34,18 @@ function updateDifficulties() {
   }
 }
 
-function makeBlankBoard(size) {
+function makeBlankBoard(size, values = []) {
   const board = document.createElement('div')
   board.className = 'blank-board'
   board.style.setProperty('--board-size', size)
-  board.setAttribute('aria-hidden', 'true')
+  board.setAttribute('aria-label', '數獨題目')
 
   const boxWidth = size === 6 ? 3 : Math.sqrt(size)
   const boxHeight = size === 6 ? 2 : Math.sqrt(size)
 
   for (let index = 0; index < size * size; index += 1) {
     const cell = document.createElement('span')
+    cell.textContent = values[index] || ''
     const column = index % size
     const row = Math.floor(index / size)
     if (column === size - 1) cell.classList.add('last-column')
@@ -75,28 +77,51 @@ function updatePreview() {
     paperFields.append(field)
   }
 
+  document.querySelector('.preview-pill').textContent = generated.length ? '已產生題目' : '版面示意 · 非實際題目'
+  document.querySelector('.preview-note').textContent = generated.length ? `共 ${generated.length} 題，皆已驗證唯一解。` : '尚未產生題目。'
   paperPuzzles.replaceChildren()
   paperPuzzles.dataset.count = perPage
-  for (let index = 0; index < perPage; index += 1) {
+  for (let index = 0; index < (generated.length || perPage); index += 1) {
     const puzzle = document.createElement('div')
     puzzle.className = 'paper-puzzle'
     const caption = document.createElement('span')
     caption.className = 'puzzle-caption'
     caption.textContent = `第 ${index + 1} 題 · ${size} × ${size} · ${difficultySelect.value}`
-    puzzle.append(caption, makeBlankBoard(size))
+    puzzle.append(caption, makeBlankBoard(size, generated[index]?.puzzle))
     paperPuzzles.append(puzzle)
   }
 }
 
 form.addEventListener('submit', (event) => event.preventDefault())
 form.addEventListener('input', (event) => {
+  if (['size', 'difficulty', 'quantity', 'seed'].includes(event.target.name)) generated = []
   if (event.target.name === 'size') updateDifficulties()
   updatePreview()
 })
 form.addEventListener('change', (event) => {
+  if (['size', 'difficulty', 'quantity', 'seed'].includes(event.target.name)) generated = []
   if (event.target.name === 'size') updateDifficulties()
   updatePreview()
 })
 
 updateDifficulties()
 updatePreview()
+
+const generateButton = document.querySelector('#generate-button')
+generateButton.addEventListener('click', async () => {
+ const error = document.querySelector('#error-message'), progress = document.querySelector('#progress-message')
+ error.hidden = true
+ if (!form.reportValidity()) return
+ const seedInput = form.elements.seed
+ if (!seedInput.value) seedInput.value = crypto.randomUUID()
+ const options = {size:Number(selectedValue('size')),count:Number(selectedValue('quantity')),difficulty:difficultySelect.value,seed:seedInput.value}
+ const controls = [...form.elements]; controls.forEach(c=>c.disabled=true)
+ generated=[]; updatePreview(); progress.textContent='正在產生題目…'
+ try {
+ generated = await generateSudoku({...options,onProgress:(done,total)=>progress.textContent=`已產生 ${done} / ${total} 題`})
+ updatePreview()
+ document.querySelector('.preview-pill').textContent='已產生題目'
+ document.querySelector('.preview-note').textContent=`共 ${generated.length} 題，皆已驗證唯一解。Seed：${seedInput.value}`
+ } catch (e) {error.textContent=e.message;error.hidden=false;progress.textContent='產生失敗'}
+ finally {controls.forEach(c=>c.disabled=false)}
+})
