@@ -1,6 +1,6 @@
 # 教師數獨學習單產生器
 
-Vite + 原生 JavaScript，繁體中文響應式介面，無後端。第二階段提供真正的數獨批次產生；PDF 匯出預留至第三階段，下載按鈕維持停用。
+Vite + 原生 JavaScript，繁體中文響應式介面，無後端。第二階段提供真正的數獨批次產生；第三階段使用 pdf-lib 在瀏覽器直接匯出 PDF。
 
 ## 雲端開發
 
@@ -19,3 +19,9 @@ Node.js 20.19+ 或 22.12+。在雲端 checkout 執行 `npm ci`、`npm run dev`�
 `src/modules` 包含 sudokuGenerator、sudokuSolver、difficultyGrader 與尚未實作的 pdfExporter。測試涵蓋規則、唯一解、答案對應、Seed、數量限制、等價排除與邏輯技巧。
 
 Vite base path 為 `/sudoku-worksheet/`，本階段不部署 GitHub Pages。
+
+## PDF 使用方法
+
+先產生題目，再選擇 A4 每頁 1、2、4 或 6 題，並按「下載題目 PDF」、「下載答案 PDF」或「下載題目＋答案 PDF」。6×6 預設每頁 4 題，9×9 預設每頁 2 題。9×9 每頁 6 題會顯示尺寸提醒。三種下載都使用同一批題目與答案，不會重新產生。下載後可再次下載。檔名包含下載日期、尺寸、難度及類型。
+
+PDF 由瀏覽器產生，無需後端。首次下載會載入約 5.7 MB 的 Noto Sans TC 字型資源；此字型依 SIL Open Font License 1.1 再散布，授權檔位於 `public/fonts/OFL.txt`。PDF 內嵌實際使用的字形，以便在 Windows、Edge、Chrome 與一般 PDF 閱讀器顯示繁體中文。PDF 內容由已產生的題目與目前排版設定決定；下載日期只影響檔名。部分罕用或擴充區文字若字型不支援，匯出會顯示錯誤。
