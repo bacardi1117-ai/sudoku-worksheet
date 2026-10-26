@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta name="description" content="為教師設計的數獨 PDF 學習單設定介面。" />
+    <title>數獨學習單產生器｜教師工作室</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="site-header">
+        <div class="shell header-inner">
+          <a class="brand" href="#top" aria-label="數獨學習單產生器，回到頁首">
+            <span class="brand-mark" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span></span>
+            <span>數獨<span class="brand-light">學習單</span></span>
+          </a>
+          <span class="phase-badge">教師工具 · 第一階段</span>
+        </div>
+      </header>
+
+      <main id="top" class="shell">
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">從課堂構想，到一張好用的學習單</p>
+            <h1 id="page-title">讓每一題數獨，<br /><em>剛好適合你的課堂。</em></h1>
+            <p class="hero-description">選好尺寸、難度與版面，先規劃屬於你的數獨學習單。題目產生與 PDF 下載功能正在開發中。</p>
+            <div class="hero-meta"><span class="meta-dot" aria-hidden="true"></span> 無需登入 · 專為教師設計</div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+            <div class="art-card"><span>數獨練習</span><div class="art-grid"><b>4</b><b></b><b></b><b>1</b><b></b><b>2</b><b>4</b><b></b><b></b><b>3</b><b>1</b><b></b><b>2</b><b></b><b></b><b>3</b></div><small>用好奇心，解開每一格。</small></div>
+            <div class="art-tag tag-top">01 / 規劃</div><div class="art-tag tag-bottom">為教學留白 ✦</div>
+          </div>
+        </section>
+
+        <div class="workspace-heading"><div><p class="eyebrow">WORKSPACE</p><h2>規劃你的學習單</h2></div><p>依照課堂需求調整設定，右側即時查看空白版面示意。</p></div>
+        <div class="workspace-grid">
+          <section class="panel settings-panel" aria-labelledby="settings-title">
+            <div class="panel-heading"><span class="step-number">01</span><div><h3 id="settings-title">學習單設定</h3><p>挑選合適的練習內容與紙張配置</p></div></div>
+            <form id="worksheet-form">
+              <fieldset class="field-group"><legend>數獨尺寸 <span class="required">*</span></legend><p class="field-help">依學生程度選擇棋盤大小</p><div class="segmented size-options"><label><input type="radio" name="size" value="4" /><span>4 × 4<small>初學者</small></span></label><label><input type="radio" name="size" value="6" /><span>6 × 6<small>進階練習</small></span></label><label><input type="radio" name="size" value="9" checked /><span>9 × 9<small>經典數獨</small></span></label></div></fieldset>
+              <div class="field-row"><div class="field-group"><label for="difficulty">難度 <span class="required">*</span></label><select id="difficulty" name="difficulty"></select><p class="field-help">依尺寸顯示適用難度</p></div><div class="field-group"><label for="quantity">題目數量 <span class="required">*</span></label><select id="quantity" name="quantity"><option value="5">5 題</option><option value="10" selected>10 題</option><option value="20">20 題</option><option value="50">50 題</option><option value="100">100 題</option></select><p class="field-help">適合單次練習或批量印製</p></div></div>
+              <div class="field-group"><label for="worksheet-title">學習單標題</label><input id="worksheet-title" name="title" type="text" maxlength="40" value="數獨練習學習單" placeholder="例如：週五數獨挑戰" /><p class="field-help">最多 40 個字；留空時使用預設標題</p></div>
+              <fieldset class="field-group"><legend>A4 每頁題數 <span class="required">*</span></legend><div class="segmented page-options"><label><input type="radio" name="perPage" value="1" /><span>1 題</span></label><label><input type="radio" name="perPage" value="2" checked /><span>2 題</span></label><label><input type="radio" name="perPage" value="4" /><span>4 題</span></label><label><input type="radio" name="perPage" value="6" /><span>6 題</span></label></div></fieldset>
+              <fieldset class="field-group field-group-last"><legend>學生資訊欄位</legend><p class="field-help">選擇要顯示在學習單上的欄位</p><div class="checkbox-row"><label><input type="checkbox" name="showClass" checked /><span>班級</span></label><label><input type="checkbox" name="showName" checked /><span>姓名</span></label><label><input type="checkbox" name="showDate" checked /><span>日期</span></label></div></fieldset>
+              <div class="action-area"><button id="generate-button" class="button button-primary" type="button" disabled>產生題目 <span aria-hidden="true">↗</span></button><p>數獨產生功能將在下一階段開放</p></div>
+            </form>
+          </section>
+
+          <section class="panel preview-panel" aria-labelledby="preview-title">
+            <div class="panel-heading"><span class="step-number">02</span><div><h3 id="preview-title">學習單預覽</h3><p>依照目前設定顯示空白版面</p></div></div>
+            <div class="preview-toolbar"><span class="preview-pill"><span aria-hidden="true">◌</span> 版面示意 · 非實際題目</span><span id="page-summary">A4 · 每頁 2 題</span></div>
+            <div class="paper-wrap"><div class="paper" aria-label="空白學習單版面示意"><div class="paper-topline"></div><div class="paper-header"><span class="paper-kicker">SUDOKU WORKSHEET</span><h4 id="paper-title">數獨練習學習單</h4><div id="paper-fields" class="paper-fields"></div></div><div id="paper-puzzles" class="paper-puzzles"></div><div class="paper-footer"><span>慢慢想，找到屬於你的解法。</span><span>01</span></div></div></div>
+            <p class="preview-note">此處只展示空白排版；尚未產生題目或答案。</p>
+            <div class="download-actions"><button id="download-worksheet" class="button button-outline" type="button" disabled>↓ 下載題目 PDF</button><button id="download-answers" class="button button-outline" type="button" disabled>↓ 下載答案 PDF</button></div>
+            <div class="status-box" role="status" aria-live="polite"><span class="status-icon" aria-hidden="true">i</span><div><strong>產生進度</strong><p id="progress-message">尚未產生題目。題目產生與 PDF 下載功能正在開發中。</p></div></div>
+            <p id="error-message" class="error-message" role="alert" hidden></p>
+          </section>
+        </div>
+      </main>
+      <footer class="site-footer"><div class="shell footer-inner"><span>數獨學習單產生器</span><span>為每一堂有趣的課而設計 · 第一階段介面預覽</span></div></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
