@@ -11,16 +11,25 @@ function random(seed){let s=2166136261;for(const c of String(seed))s=Math.imul(s
 export async function generateSudoku({size=9,count=1,seed='default',difficulty='入門',onProgress=()=>{}}={}) {
  if(![6,9].includes(size))throw new Error('只支援 6×6 與 9×9')
  if(!Number.isInteger(count)||count<1||count>20)throw new Error('每批必須為 1～20 題')
- if(!['入門','簡單'].includes(difficulty))throw new Error('此難度尚未支援')
+ if(!['入門','簡單','中階','困難'].includes(difficulty)||(size===6&&['中階','困難'].includes(difficulty)))throw new Error('此難度尚未支援')
  const rng=random(seed),shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a},batch=[],seen=new Set(),h=size/3
  for(let attempt=0;attempt<count*100&&batch.length<count;attempt++) {
  await new Promise(resolve=>setTimeout(resolve,0))
+ if(attempt%10===0)onProgress(batch.length,count,attempt+1)
  const rows=shuffle(Array.from({length:3},(_,i)=>i)).flatMap(b=>shuffle(Array.from({length:h},(_,i)=>b*h+i))),cols=shuffle(Array.from({length:h},(_,i)=>i)).flatMap(b=>shuffle([0,1,2].map(i=>b*3+i))),digits=shuffle(Array.from({length:size},(_,i)=>i+1))
  const solution=rows.flatMap(r=>cols.map(c=>digits[(r*3+Math.floor(r/h)+c)%size])),puzzle=[...solution]
- for(const i of shuffle(Array.from({length:size*size},(_,i)=>i))){const old=puzzle[i];puzzle[i]=0;const grade=gradeDifficulty(puzzle);if(!grade.solved||(difficulty==='入門'&&grade.difficulty!=='入門')||solveSudoku(puzzle).length!==1)puzzle[i]=old}
+ for(const i of shuffle(Array.from({length:size*size},(_,i)=>i))){
+  const old=puzzle[i],basic=['入門','簡單'].includes(difficulty)
+  puzzle[i]=0
+  const grade=basic?gradeDifficulty(puzzle):null
+  if((basic&&(!grade.solved||(difficulty==='入門'&&grade.difficulty!=='入門')))||solveSudoku(puzzle).length!==1){puzzle[i]=old;continue}
+  // Keep the first puzzle that actually needs the requested advanced technique.
+  // Removing more clues can make a valid puzzle unclassifiable by this grader.
+  if(!basic&&puzzle.filter(Boolean).length<=35&&gradeDifficulty(puzzle).difficulty===difficulty)break
+ }
  const grade=gradeDifficulty(puzzle),key=canonicalKey(puzzle)
  if(grade.difficulty!==difficulty||seen.has(key))continue
- seen.add(key);batch.push({puzzle,solution,size,difficulty,steps:grade.steps});onProgress(batch.length,count)
+ seen.add(key);batch.push({puzzle,solution,size,difficulty,steps:grade.steps});onProgress(batch.length,count,attempt+1)
  }
  if(batch.length!==count)throw new Error('已達產生次數上限，請更換 Seed 或難度再試')
  return batch

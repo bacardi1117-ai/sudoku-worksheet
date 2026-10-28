@@ -7,7 +7,7 @@ import './style.css'
 
 const applicableDifficulties = {
   6: ['入門', '簡單'],
-  9: ['入門', '簡單'],
+  9: ['入門', '簡單', '中階', '困難'],
 }
 
 const form = document.querySelector('#worksheet-form')
@@ -123,7 +123,7 @@ generateButton.addEventListener('click', async () => {
  const controls = [...form.elements]; controls.forEach(c=>c.disabled=true)
  generated=[]; updatePreview(); progress.textContent='正在產生題目…'
  try {
- generated = await generateSudoku({...options,onProgress:(done,total)=>progress.textContent=`已產生 ${done} / ${total} 題`})
+ generated = await generateSudoku({...options,onProgress:(done,total,attempt)=>progress.textContent=`已產生 ${done} / ${total} 題（嘗試 ${attempt} 次）`})
  updatePreview()
  document.querySelector('.preview-pill').textContent='已產生題目'
  document.querySelector('.preview-note').textContent=`共 ${generated.length} 題，皆已驗證唯一解。Seed：${seedInput.value}`
